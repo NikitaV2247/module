@@ -1,0 +1,20 @@
+[flake8]
+max-line-length = 100
+extend-ignore =
+    # конфликтует с black: срезы и пробелы вокруг двоеточий
+    E203,
+    W503,
+    # однобуквенная переменная l в циклах по занятиям (lesson);
+    # принято командой на ревью PR #23, читаемость сохранена за счёт контекста
+    E741
+exclude =
+    .git,
+    .venv,
+    __pycache__,
+    .pytest_cache,
+    exports,
+    assets,
+    docs
+per-file-ignores =
+    # тесты: длинные русские строки-докстринги и assert-сообщения
+    tests/*: E501
