@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 """Экспорт расписания в формат iCalendar (.ics, RFC 5545).
-
-Каждое занятие становится событием VEVENT с плавающим временем
-(без часового пояса — расписание привязано к звонкам колледжа):
-    BEGIN:VCALENDAR
-    ...
-    BEGIN:VEVENT
-    UID:2-1П9-Понедельник-1@kpc-schedule
-    DTSTART:20261005T081500
-    DTEND:20261005T094500
-    SUMMARY:Операционные системы (каб. 414)
-    END:VEVENT
-    END:VCALENDAR
-
-Даты берутся из данных недели (schedule.week_dates); если даты
-не указаны, экспорт невозможен (ValueError).
 """
 
 from __future__ import annotations
