@@ -17,9 +17,6 @@ def to_text(
     with_context: bool = False,
 ) -> str:
     """Форматирует список занятий в читаемый текст.
-
-    with_context=True добавляет день недели и группу к каждой строке —
-    используется в результатах поиска.
     """
     lines: list[str] = []
     if title:
@@ -42,9 +39,6 @@ def to_text(
 
 def to_csv(lessons: list[Lesson]) -> str:
     """Формирует CSV-таблицу занятий (разделитель — точка с запятой).
-
-    В CSV пишется полное наименование дисциплины — как в данных
-    учебного плана (краткие формы остаются для экранных представлений).
     """
     buffer = io.StringIO()
     writer = csv.writer(buffer, delimiter=";", lineterminator="\n")

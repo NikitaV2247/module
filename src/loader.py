@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 """Загрузка данных модуля из JSON-файлов.
-
-DataLoader        — готовое расписание недели (data/schedule.json);
-CurriculumLoader  — учебный план: группы, дисциплины, часы, кабинеты
-                    и сетка звонков по дням недели (data/curriculum.json,
-                    секция 'bell_schedule');
-save_schedule     — сохранение сгенерированного расписания обратно
-                    в data/schedule.json в том же формате.
 """
 
 from __future__ import annotations
@@ -34,10 +27,6 @@ from src.models import (
 
 class DataLoader:
     """Загружает файл data/schedule.json и строит объект Schedule.
-
-    Поднимает исключения:
-        FileNotFoundError  — файл не найден;
-        ValueError         — повреждена структура JSON.
     """
 
     def __init__(self, path: str | None = None) -> None:
@@ -208,12 +197,6 @@ def parse_bell_schedule(raw) -> dict[str, list[TimeSlot]]:
 
 class CurriculumLoader:
     """Загружает учебный план data/curriculum.json.
-
-    Помимо групп, дисциплин и периода семестра читает секцию
-    'bell_schedule' — расписание звонков по дням недели («номер
-    пары → время»). Указанные дни подменяют встроенную сетку
-    (src.models.apply_bell_schedule), неуказанные — остаются
-    со встроенными значениями.
     """
 
     def __init__(self, path: str | None = None) -> None:
@@ -303,9 +286,6 @@ class CurriculumLoader:
 
 def save_schedule(schedule: Schedule, path: str) -> None:
     """Сохраняет расписание в формат data/schedule.json.
-
-    Формат: дни → группы → номер пары → предмет, кабинет и
-    преподаватель (если указан).
     """
     data: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
     for group in schedule.groups:

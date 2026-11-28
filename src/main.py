@@ -1,18 +1,5 @@
 # -*- coding: utf-8 -*-
 """Консольный интерфейс модуля генерации расписания занятий.
-
-Запуск:
-    python -m src.main                            # интерактивное меню
-    python -m src.main --generate                 # неделя с сегодняшней датой
-    python -m src.main --generate --week 1        # 1-я неделя семестра
-    python -m src.main --generate --week 2026-11-23   # неделя с датой
-    python -m src.main --generate --day 2026-10-08    # один день
-    python -m src.main --group 4-1П9 --day Понедельник
-    python -m src.main --group 4-1П9 --week       # неделя с переменами
-    python -m src.main --conflicts                # проверка конфликтов
-    python -m src.main --group 4-1П9 --auto-schedule  # автогенерация недели группы
-    python -m src.main --group 4-1П9 --auto-schedule --week 5  # на 5-ю неделю
-    python -m src.main --search "МДК 02.02"
 """
 
 from __future__ import annotations
@@ -128,23 +115,6 @@ def run_generate(
     seed_by_week: bool = False,
 ) -> int:
     """Собирает неделю или один день для всех групп из учебного плана.
-
-    Период семестра задаётся в data/curriculum.json (2 сентября –
-    20 декабря 2026 г., 16 недель). Что собрать:
-        week=None, day=None — неделя из data/schedule.json (или
-                              сегодняшняя, если расписание не читается);
-        week="1"           — 1-я неделя сентября (номер 1–16);
-        week="2026-11-23"   — неделя, содержащая дату (4-я неделя ноября);
-        day="2026-10-08"    — один день (четверг 8 октября).
-
-    Часы дисциплин делятся на недели семестра, пары концентрируются
-    по 3–4 в день (у группы — не более 4) и расставляются по сетке
-    звонков с выбором свободного кабинета.
-
-    seed_by_week=True (пункт 7 меню) привязывает расстановку к номеру
-    недели семестра: у каждой недели — своё расписание, повторный
-    запуск той же недели даёт тот же результат. По умолчанию (CLI
-    --generate) расстановка детерминирована, как и раньше.
     """
     try:
         curriculum = CurriculumLoader().load()
@@ -247,10 +217,6 @@ def _canonical_group(names: list[str], group: str) -> str | None:
 
 def _clone_schedule(schedule: Schedule) -> Schedule:
     """Копия расписания: группы и списки занятий — новые.
-
-    Сами занятия — неизменяемые Lesson, их можно разделять между
-    копиями: при автогенерации заменяется только список занятий
-    выбранной группы, остальные группы остаются как были.
     """
     clone = Schedule(
         college=schedule.college, week=schedule.week, dates=dict(schedule.dates)
@@ -276,21 +242,6 @@ def run_auto_week(
     schedule: Schedule | None = None,
 ) -> tuple[list[Lesson], dict[str, list[Lesson]], Schedule]:
     """Автогенерация недели группы из учебного плана с записью в файл.
-
-    Предметы, часы и кабинеты берутся из data/curriculum.json (не из
-    текущих занятий группы), число пар в неделе — из объёма часов
-    дисциплин. Расстановка зависит от номера недели семестра (seed),
-    поэтому у каждой недели — своё расписание. Итог записывается в
-    data/schedule.json: занятия группы заменяются на новые, подпись
-    недели и даты дней обновляются (как в пункте 8), остальные группы
-    остаются без изменений.
-
-        week=None    — неделя из дат schedule.json (или текущая);
-        week="5"     — 5-я неделя семестра;
-        week="2026-11-23" — неделя, содержащая дату.
-
-    Возвращает (занятия, занятия по дням, обновлённое расписание).
-    ValueError — если группа не найдена или неделю не выбрать.
     """
     try:
         curriculum = CurriculumLoader().load()
@@ -446,10 +397,6 @@ def run_cli(args, gen: ScheduleGenerator) -> int:
 
 def export_week_pdf(gen: ScheduleGenerator, group: str, path: str) -> str:
     """Экспортирует неделю группы в настоящий PDF-файл (альбомный A4).
-
-    Имя файла без расширения дополняется «.pdf», каталог создаётся
-    при необходимости. Возвращает путь к сохранённому файлу;
-    ValueError — если группы нет в расписании.
     """
     week_lessons = gen.group_week(group)  # ValueError, если группы нет
     if not path.lower().endswith(".pdf"):
