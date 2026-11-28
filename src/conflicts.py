@@ -10,10 +10,6 @@ from dataclasses import dataclass, field
 from src.abbreviations import display_name
 from src.models import MAX_DAY_PAIRS, WEEKDAYS, Lesson, Schedule, day_pair_count
 
-# Псевдо-аудитории: маркеры видов работы, а не кабинеты.
-# Встречаются в расписании при ручном вводе; исключаются
-# из проверки конфликтов аудиторий. Спортзал — настоящий кабинет
-# (он один), поэтому конфликты в нём проверяются.
 NON_ROOMS: frozenset[str] = frozenset({"ср", "экс"})
 
 # Родительный падеж для заголовка конфликта
@@ -158,12 +154,6 @@ class ConstraintViolation:
 
 def check_constraints(schedule: Schedule) -> list[ConstraintViolation]:
     """Проверяет временные и форматные ограничения.
-
-    Временные: номер пары — в пределах сетки звонков своего дня
-    (пн — 6, вт–пт — 7, сб — 4 пары). «Окна»: пары группы в учебном
-    дне идут подряд, промежутки между ними не допускаются.
-    Нагрузка: у группы не больше MAX_DAY_PAIRS (4) пар в день.
-    Форматные: предмет непустой.
     """
     violations: list[ConstraintViolation] = []
     per_day: dict[tuple[str, str], int] = {}
